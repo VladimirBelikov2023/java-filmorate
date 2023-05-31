@@ -63,6 +63,6 @@ public class UserController {
 
     private boolean isValid(User user) {
         return user.getEmail() != null && user.getLogin() != null && user.getBirthday() != null && !user.getEmail().isEmpty() && user.getEmail().contains("@") &&
-                !user.getLogin().isEmpty() && !user.getLogin().contains(" ") && !user.getBirthday().isAfter(LocalDate.now());
+                !user.getLogin().trim().isEmpty() && !user.getLogin().contains(" ") && !user.getBirthday().isAfter(LocalDate.now());
     }
 }
