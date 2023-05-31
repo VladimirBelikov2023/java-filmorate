@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.MyException;
+import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -36,7 +36,7 @@ class UserControllerTest {
         try {
             assertNotNull(controller.postUser(new User(3, null, "логин",
                     "Валера", LocalDate.now())));
-        } catch (MyException ex) {
+        } catch (ValidateException ex) {
             assertEquals("Некорректный User", ex.getMessage());
             return;
         }
@@ -48,7 +48,7 @@ class UserControllerTest {
         try {
             assertNotNull(controller.postUser(new User(3, "Волкmail.ru", "логин",
                     "Валера", LocalDate.now())));
-        } catch (MyException ex) {
+        } catch (ValidateException ex) {
             assertEquals("Некорректный User", ex.getMessage());
             return;
         }
@@ -60,7 +60,7 @@ class UserControllerTest {
         try {
             assertNotNull(controller.postUser(new User(3, "Волк@mail.ru", null,
                     "Валера", LocalDate.now())));
-        } catch (MyException ex) {
+        } catch (ValidateException ex) {
             assertEquals("Некорректный User", ex.getMessage());
             return;
         }
@@ -72,7 +72,7 @@ class UserControllerTest {
         try {
             assertNotNull(controller.postUser(new User(3, "Волк@mail.ru", "логин dfdf",
                     "Валера", LocalDate.now())));
-        } catch (MyException ex) {
+        } catch (ValidateException ex) {
             assertEquals("Некорректный User", ex.getMessage());
             return;
         }
@@ -96,7 +96,7 @@ class UserControllerTest {
             User user = (new User(3, "Волк@mail.ru", "логин",
                     "Валера", LocalDate.now()));
             controller.updateUser(user);
-        } catch (MyException ex) {
+        } catch (ValidateException ex) {
             assertEquals("Такого Userа нет", ex.getMessage());
             return;
         }
