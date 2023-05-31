@@ -16,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final static LocalDate validDate = LocalDate.of(1895, 11, 28);
+    private final static LocalDate DATA = LocalDate.of(1895, 11, 28);
     private final Map<Integer, Film> lsFilm = new HashMap<>();
     private int id = 1;
 
@@ -62,7 +62,7 @@ public class FilmController {
 
     private boolean isValid(Film film) {
         return film.getName() != null && film.getReleaseDate() != null && !film.getName().isEmpty() && film.getDescription().length() <= 200 &&
-                film.getReleaseDate().isAfter(validDate) &&
+                film.getReleaseDate().isAfter(DATA) &&
                 film.getDuration() >= 0;
     }
 
