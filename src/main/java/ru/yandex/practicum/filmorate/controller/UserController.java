@@ -1,9 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -14,55 +18,56 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/users")
+@AllArgsConstructor
 public class UserController {
-    private int id = 1;
 
-    private final Map<Integer, User> lsUser = new HashMap<>();
+    private final UserService userService;
 
-    @GetMapping
+    @GetMapping("/users")
     public List<User> getLsUsers() {
-        return new ArrayList<>(lsUser.values());
+        return new ArrayList<>(userService.getLsUsers());
     }
 
-    @PostMapping
+    @GetMapping("/users/{id}")
+    public User getUser(@PathVariable int id) {
+        return userService.getUser(id);
+    }
+
+    @PutMapping("/users/{idUser1}/friends/{idUser2}")
+    public void addFriend(@PathVariable int idUser1, @PathVariable int idUser2) {
+        userService.addFriend(idUser1, idUser2);
+    }
+
+    @DeleteMapping("/users/{idUser1}/friends/{idUser2}")
+    public void delFriend(@PathVariable int idUser1, @PathVariable int idUser2) {
+        userService.deleteFriend(idUser1, idUser2);
+    }
+
+    @GetMapping("/users/{id}/friends")
+    public List<User> getFriend(@PathVariable int id) {
+        return userService.getFriend(id);
+    }
+
+    @GetMapping("/users/{idUser1}/friends/common/{idUser2}")
+    public List<User> getLsFriends(@PathVariable int idUser1, @PathVariable int idUser2) {
+        return userService.getLsFriends(idUser1, idUser2);
+    }
+
+
+    @PostMapping("/users")
     public User postUser(@RequestBody @Valid User us) {
-        log.debug("Пост User");
-        us.setId(id);
-        if (us.getName() == null) {
-            us.setName(us.getLogin());
-        }
-        if (!isValid(us)) {
-            log.warn("Некорректный User");
-            throw new ValidateException("Некорректный User");
-        } else {
-            lsUser.put(id, us);
-            id += 1;
-            return us;
-        }
+        return userService.postUser(us);
     }
 
-    @PutMapping
+    @PutMapping("/users")
     public User updateUser(@RequestBody @Valid User user) {
-        log.debug("Обновление User");
-        if (!lsUser.containsKey(user.getId())) {
-            log.warn("User существует");
-            throw new ValidateException("Такого Userа нет");
-        }
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        }
-        if (!isValid(user)) {
-            log.warn("Некорректный User");
-            throw new ValidateException("Некорректный User");
-        } else {
-            lsUser.put(user.getId(), user);
-            return user;
-        }
+        return userService.updateUser(user);
     }
 
-    private boolean isValid(User user) {
-        return user.getEmail() != null && user.getLogin() != null && user.getBirthday() != null && !user.getEmail().isEmpty() && user.getEmail().contains("@") &&
-                !user.getLogin().trim().isEmpty() && !user.getLogin().contains(" ") && !user.getBirthday().isAfter(LocalDate.now());
+    @DeleteMapping("/users")
+    public void deleteUser(int id) {
+        userService.deleteUser(id);
     }
+
+
 }

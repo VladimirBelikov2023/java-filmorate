@@ -7,6 +7,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class Film {
@@ -19,6 +21,7 @@ public class Film {
     private final LocalDate releaseDate;
     @Positive
     private final int duration;
+    private final List<User> lsLikes = new ArrayList<>();
 
     public Film(int id, String name, String description, LocalDate releaseDate, int duration) {
         this.id = id;
@@ -30,6 +33,18 @@ public class Film {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void addLike(User user) {
+        lsLikes.add(user);
+    }
+
+    public void delLike(User user) {
+        lsLikes.remove(user);
+    }
+
+    public List<User> getLikes() {
+        return lsLikes;
     }
 
 

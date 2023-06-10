@@ -1,9 +1,19 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.InMemoryFilmService;
+import ru.yandex.practicum.filmorate.service.InMemoryUserService;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 
@@ -11,12 +21,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
 
-    private UserController controller;
+    private final UserStorage userStorage = new InMemoryUserStorage();
+    private final UserService filmService = new InMemoryUserService(userStorage);
+    private final UserController controller = new UserController(filmService);
 
-    @BeforeEach
-    public void start() {
-        controller = new UserController();
-    }
 
     @Test
     void getLsUsers() {
@@ -91,16 +99,14 @@ class UserControllerTest {
     }
 
     @Test
-    void updateUserNotExist() {
-        try {
-            User user = (new User(3, "Волк@mail.ru", "логин",
-                    "Валера", LocalDate.now()));
-            controller.updateUser(user);
-        } catch (ValidateException ex) {
-            assertEquals("Такого Userа нет", ex.getMessage());
-            return;
-        }
-        fail();
+    void addFriend() {
+        User user = new User(1, "fddf@mail.ru", "dsdd", "ssds", LocalDate.now());
+        User user2 = new User(2, "fddf@mail.ru", "dsdd", "Вася", LocalDate.now());
+
+        controller.postUser(user);
+        controller.postUser(user2);
+        controller.addFriend(1, 2);
+        controller.getUser(1);
     }
 
 
