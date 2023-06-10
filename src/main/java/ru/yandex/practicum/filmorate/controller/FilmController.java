@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class FilmController {
 
-    final private FilmService filmService;
+    final FilmService filmService;
 
     @GetMapping("/films")
     public List<Film> getLsFilms() {
