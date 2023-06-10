@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
@@ -42,11 +43,7 @@ public class InMemoryUserService implements UserService {
             throw new UnknownException("Некорректный id");
         }
         User user = userStorage.getMap().get(id);
-        List<User> ls = new ArrayList<>();
-        for (Integer o : user.getLsFriends()) {
-            ls.add(userStorage.getMap().get(o));
-        }
-        return ls;
+        return user.getLsFriends().stream().map(integer -> userStorage.getMap().get(integer)).collect(Collectors.toList());
     }
 
 
@@ -93,9 +90,6 @@ public class InMemoryUserService implements UserService {
         } else if (!userStorage.getMap().containsKey(idUser2)) {
             log.warn("Друг не найден");
             throw new UnknownException("Друг не найден");
-        } else if (userStorage.getMap().get(idUser1).getLsFriends().contains(userStorage.getMap().get(idUser2))) {
-            log.warn("Они и так друзья");
-            throw new ValidateException("Они и так друзья");
         } else {
             userStorage.getMap().get(idUser1).addFriend(idUser2);
             userStorage.getMap().get(idUser2).addFriend(idUser1);
@@ -145,17 +139,6 @@ public class InMemoryUserService implements UserService {
             user2.deleteFriend(user1);
         }
 
-    }
-
-
-    @Override
-    public void deleteUser(int id) {
-        log.debug("удаление Usera");
-        if (!userStorage.getMap().containsKey(id)) {
-            log.debug(" Такого пользователя нет");
-            throw new UnknownException("Такого пользователя нет");
-        }
-        userStorage.deleteUser(id);
     }
 
     private boolean isValid(User user) {

@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class FilmController {
 
-    final FilmService filmService;
+    private final FilmService filmService;
 
     @GetMapping("/films")
     public List<Film> getLsFilms() {
@@ -53,10 +53,7 @@ public class FilmController {
     }
 
     @GetMapping("/films/popular")
-    public List<Film> getTop(@RequestParam(required = false) Integer count) {
-        if (count == null) {
-            count = 10;
-        }
+    public List<Film> getTop(@RequestParam(required = false, defaultValue = "10") Integer count) {
         return filmService.getTop(count);
     }
 

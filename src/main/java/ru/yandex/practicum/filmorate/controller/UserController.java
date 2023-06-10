@@ -59,10 +59,5 @@ public class UserController {
         return userService.updateUser(user);
     }
 
-    @DeleteMapping("/users")
-    public void deleteUser(int id) {
-        userService.deleteUser(id);
-    }
-
 
 }

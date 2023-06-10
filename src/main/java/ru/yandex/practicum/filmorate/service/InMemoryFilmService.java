@@ -24,6 +24,7 @@ public class InMemoryFilmService implements FilmService {
     private final LocalDate dataVal = LocalDate.of(1895, 11, 28);
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final Comparator<Film> comparator = (film1, film2) -> film1.getLsLikes().size() - film2.getLikes().size();
 
 
     @Override
@@ -88,9 +89,6 @@ public class InMemoryFilmService implements FilmService {
         } else if (!filmStorage.getMap().containsKey(idFilm)) {
             log.warn("Такого фильма нет");
             throw new UnknownException("Такого фильма нет");
-        } else if (filmStorage.getMap().get(idFilm).getLsLikes().contains(userStorage.getMap().get(idUser))) {
-            log.warn("Лайк уже поставлен");
-            throw new ValidateException("Лайк уже поставлен");
         } else {
             User user = userStorage.getMap().get(idUser);
             filmStorage.getMap().get(idFilm).addLike(user);
@@ -118,11 +116,8 @@ public class InMemoryFilmService implements FilmService {
     @Override
     public List<Film> getTop(int max) {
         log.debug("Получаем топ");
-        Comparator<Film> filmComparator = (film1, film2) -> film1.getLsLikes().size() - film2.getLikes().size();
-        Comparator<Film> f2 = filmComparator.reversed();
-        List<Film> ls = filmStorage.getLsFilms();
-        ls.sort(f2);
-        return ls.stream().limit(max).collect(Collectors.toList());
+        Comparator<Film> f2 = comparator.reversed();
+        return filmStorage.getLsFilms().stream().sorted(f2).limit(max).collect(Collectors.toList());
     }
 
 

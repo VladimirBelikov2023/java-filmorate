@@ -13,8 +13,6 @@ public interface UserService {
 
     User updateUser(User user);
 
-    void deleteUser(int id);
-
     void addFriend(int idUser1, int idUser2);
 
     List<User> getLsFriends(int idUser1, int idUser2);

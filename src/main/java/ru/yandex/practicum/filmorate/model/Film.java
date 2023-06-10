@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -7,8 +8,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class Film {
@@ -21,7 +22,8 @@ public class Film {
     private final LocalDate releaseDate;
     @Positive
     private final int duration;
-    private final List<User> lsLikes = new ArrayList<>();
+    @JsonIgnore
+    private final Set<User> lsLikes = new HashSet<>();
 
     public Film(int id, String name, String description, LocalDate releaseDate, int duration) {
         this.id = id;
@@ -43,7 +45,7 @@ public class Film {
         lsLikes.remove(user);
     }
 
-    public List<User> getLikes() {
+    public Set<User> getLikes() {
         return lsLikes;
     }
 
