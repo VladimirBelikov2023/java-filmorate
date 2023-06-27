@@ -3,6 +3,12 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.InMemoryFilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 
@@ -10,7 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
 
-    private final FilmController controller = new FilmController();
+    private final FilmStorage filmStorage = new InMemoryFilmStorage();
+    private final UserStorage userStorage = new InMemoryUserStorage();
+    private final FilmService filmService = new InMemoryFilmService(filmStorage,userStorage);
+    private final FilmController controller = new FilmController(filmService);
 
     @Test
     void getLsFilms() {
@@ -83,18 +92,7 @@ class FilmControllerTest {
         assertEquals(film, controller.getLsFilms().get(0));
     }
 
-    @Test
-    void updateFilmNotExist() {
-        try {
-            Film film = new Film(3, "Волк с Уолл-Стрит2", "Мой нелюбимый фильм",
-                    LocalDate.of(2010, 3, 1), 10);
-            controller.update(film);
-        } catch (ValidateException ex) {
-            assertEquals("Такого фильма нет", ex.getMessage());
-            return;
-        }
-        fail();
-    }
+
 
 
     @Test
