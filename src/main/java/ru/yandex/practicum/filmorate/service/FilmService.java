@@ -17,7 +17,6 @@ public interface FilmService {
 
     void delLike(int idUser, int idFilm);
 
-    List<Film> getTop(int max);
-
     Film getFilm(int id);
+    List<Film>getPopular(int max);
 }

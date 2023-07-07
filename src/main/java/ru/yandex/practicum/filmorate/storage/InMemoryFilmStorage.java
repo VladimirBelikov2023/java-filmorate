@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
 import java.util.*;
 
-@Component
+
 public class InMemoryFilmStorage implements FilmStorage {
 
 
@@ -52,6 +51,18 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public int getId() {
         return id;
+    }
+
+    public List<Film> getPopular(int id) {
+        return null;
+    }
+
+    public void addLike(int idUser, int idFilm) {
+
+    }
+
+    public void delLike(int idUser, int idFilm) {
+
     }
 
 
