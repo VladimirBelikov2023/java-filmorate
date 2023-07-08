@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class InMemoryUserStorage implements UserStorage {
     private int id = 1;
     private final Map<Integer, User> lsUser = new HashMap<>();
@@ -50,7 +49,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(int us1, int us2, int us3) {
+    public void addFriend(int us1, int us2) {
 
     }
 

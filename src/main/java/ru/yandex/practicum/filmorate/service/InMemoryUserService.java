@@ -90,7 +90,7 @@ public class InMemoryUserService implements UserService {
             log.warn("Друг не найден");
             throw new UnknownException("Друг не найден");
         } else {
-            userStorage.addFriend(idUser1, idUser2, 2);
+            userStorage.addFriend(idUser1, idUser2);
         }
     }
 

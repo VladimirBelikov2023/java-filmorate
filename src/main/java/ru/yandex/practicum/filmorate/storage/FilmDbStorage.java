@@ -42,11 +42,11 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film postFilm(Film film) {
 
-        List<Genre> ls;
+        Set<Genre> ls;
         if (!film.getGenre().isEmpty()) {
             ls = film.getGenre();
         } else {
-            ls = new ArrayList<>();
+            ls = new HashSet<>();
         }
         Mpa mpa = film.getMpa();
 
@@ -77,11 +77,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        List<Genre> ls;
+        Set<Genre> ls;
         if (!film.getGenre().isEmpty()) {
             ls = film.getGenre();
         } else {
-            ls = new ArrayList<>();
+            ls = new HashSet<>();
         }
         if (film.getGenre().isEmpty() && film.getMpa() == null) {
             jdbcTemplate.update("update films set name =?, description = ?, release_date = ?," +
@@ -98,7 +98,7 @@ public class FilmDbStorage implements FilmStorage {
             jdbcTemplate.update("update films set name =?, description = ?, release_date = ?," +
                             "duration = ?,  rating_id= ?  where id = ?", film.getName(), film.getDescription(),
                     film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
-            addGenreCh(new ArrayList<>(), film.getId());
+            addGenreCh(new HashSet<>(), film.getId());
             return film;
         } else {
             jdbcTemplate.update("update films set name =?, description = ?, release_date = ?," +
@@ -141,7 +141,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private RowMapper<List<Film>> filmRowMapper() {
         return (rs, rowNum) -> {
-            HashMap<Integer, List<Genre>> gn = new HashMap<>();
+            HashMap<Integer, Set<Genre>> gn = new HashMap<>();
             do {
                 int id = rs.getInt("id_film");
                 if (!ls.containsKey(rs.getInt("id_film"))) {
@@ -173,30 +173,38 @@ public class FilmDbStorage implements FilmStorage {
                 if (ls.containsKey(rs.getInt("id_film")) && rs.getString("genre_id") != null) {
                     genre.setId(rs.getInt("genre_id"));
                     genre.setName(rs.getString("genre_name"));
-                    List<Genre> lss;
+                    Set<Genre> lss;
                     if (gn.containsKey(id)) {
                         lss = gn.get(id);
                     } else {
-                        lss = new ArrayList<>();
+                        lss = new HashSet<>();
                     }
                     if (!lss.contains(genre)) {
                         lss.add(genre);
                     }
+                    List<Genre> s = new ArrayList<>(lss);
+                    s.sort(new Comparator<Genre>() {
+                        @Override
+                        public int compare(Genre o1, Genre o2) {
+                            return o1.getId() - o2.getId();
+                        }
+                    });
+                    lss = new HashSet<>(s);
                     ls.get(id).setGenre(lss);
                     gn.put(id, lss);
 
                 } else {
-                    List<Genre> lss;
+                    Set<Genre> lss;
                     if (gn.containsKey(id)) {
                         lss = gn.get(id);
                     } else {
-                        lss = new ArrayList<>();
+                        lss = new HashSet<>();
                     }
                     lss.add(genre);
                     ls.get(id).setGenre(lss);
                     gn.put(id, lss);
                     if (genre.getId() == 0) {
-                        ls.get(id).setGenre(new ArrayList<>());
+                        ls.get(id).setGenre(new HashSet<>());
                     }
                 }
             } while (rs.next());
@@ -229,14 +237,15 @@ public class FilmDbStorage implements FilmStorage {
         return ans;
     }
 
-    private void addGenreCh(List<Genre> ls, int id) {
+    private void addGenreCh(Set<Genre> ls, int id) {
         jdbcTemplate.update("delete from genre where film_id = ?", id);
         if (ls.isEmpty()) {
             return;
         }
+        List<Genre> ll = new ArrayList<>(ls);
         for (int i = 0; i < ls.size(); i++) {
             jdbcTemplate.update("INSERT INTO genre  (film_id," +
-                    " genre_id) VALUES(?,?) ", id, ls.get(i).getId());
+                    " genre_id) VALUES(?,?) ", id, ll.get(i).getId());
         }
     }
 

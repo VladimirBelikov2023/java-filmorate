@@ -6,10 +6,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import javax.validation.Valid;
 import java.util.*;
 
-
 public class InMemoryFilmStorage implements FilmStorage {
-
-
     private final Map<Integer, Film> lsFilm = new HashMap<>();
     private int id = 1;
 

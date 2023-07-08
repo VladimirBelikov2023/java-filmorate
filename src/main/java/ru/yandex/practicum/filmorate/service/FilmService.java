@@ -5,7 +5,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.List;
 
 public interface FilmService {
-
     List<Film> getLsFilms();
 
     Film postFilm(Film film);
@@ -19,6 +18,5 @@ public interface FilmService {
     void delLike(int idUser, int idFilm);
 
     Film getFilm(int id);
-
-    List<Film> getPopular(int max);
+    List<Film>getPopular(int max);
 }

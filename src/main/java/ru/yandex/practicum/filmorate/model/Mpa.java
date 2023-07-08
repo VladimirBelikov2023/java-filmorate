@@ -1,6 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
+
+@Getter
+@Setter
 public class Mpa {
+    @NotBlank
     private String name;
     private int id;
 
@@ -13,19 +21,4 @@ public class Mpa {
 
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 }

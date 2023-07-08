@@ -20,13 +20,15 @@ public class Film {
     private final LocalDate releaseDate;
     @Positive
     private final int duration;
-    private List<Genre> genres = new ArrayList<>();
+    private Set<Genre> genres = new HashSet<>();
     private Integer rate = 0;
-    private Mpa mpa = new Mpa();
+    @NotNull
+    private Mpa mpa;
 
     private final Set<User> lsLikes = new HashSet<>();
 
     public Film(int id, String name, String description, LocalDate releaseDate, int duration) {
+        this.mpa = new Mpa();
         this.id = id;
         this.name = name;
         this.description = description;
@@ -42,11 +44,11 @@ public class Film {
         this.mpa = mpa;
     }
 
-    public List<Genre> getGenre() {
+    public Set<Genre> getGenre() {
         return genres;
     }
 
-    public void setGenre(List<Genre> genre) {
+    public void setGenre(Set<Genre> genre) {
         this.genres = genre;
     }
 
