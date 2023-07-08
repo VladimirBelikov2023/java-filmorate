@@ -7,6 +7,7 @@ import java.util.Map;
 
 public interface UserStorage {
     List<User> getLsUsers();
+
     User getUser(int id);
 
     User postUser(User user);
@@ -14,7 +15,9 @@ public interface UserStorage {
     User updateUser(User user);
 
     void deleteUser(int id);
-    void addFriend(int us1, int us2 );
+
+    void addFriend(int us1, int us2);
+
     void delFriend(int us1, int us2);
 
 
