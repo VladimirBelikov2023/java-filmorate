@@ -9,10 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Slf4j
 @AllArgsConstructor
@@ -22,36 +19,36 @@ public class InMemoryUserService implements UserService {
 
     @Override
     public List<User> getLsUsers() {
-        return new ArrayList<>(userStorage.getMap().values());
+        return new ArrayList<>(userStorage.getLsUsers());
     }
 
     @Override
     public User getUser(int id) {
         log.debug("получаем по id User");
-        if (!userStorage.getMap().containsKey(id)) {
-            log.warn("Некорректный id");
-            throw new UnknownException("Некорректный id");
+        try {
+            return userStorage.getUser(id);
+        } catch (Exception e) {
+            throw new UnknownException("Wrong id of User");
         }
-        return userStorage.getMap().get(id);
     }
 
     @Override
     public List<User> getFriend(int id) {
         log.debug("получаем друзей User");
-        if (!userStorage.getMap().containsKey(id)) {
-            log.warn("Некорректный id");
-            throw new UnknownException("Некорректный id");
+        User user = userStorage.getUser(id);
+        ArrayList<User> ans = new ArrayList<>();
+        Set<User> lss = user.getLsFriends();
+        for (User o : lss) {
+            ans.add(o);
         }
-        User user = userStorage.getMap().get(id);
-        return user.getLsFriends().stream().map(integer -> userStorage.getMap().get(integer)).collect(Collectors.toList());
+        return ans;
     }
 
 
     @Override
     public User postUser(User us) {
         log.debug("Пост User");
-        us.setId(userStorage.getId());
-        if (us.getName() == null || us.getName().isEmpty()) {
+        if (us.getName() == null) {
             us.setName(us.getLogin());
         }
         if (!isValid(us)) {
@@ -65,12 +62,13 @@ public class InMemoryUserService implements UserService {
     @Override
     public User updateUser(User user) {
         log.debug("Обновление User");
-        if (!userStorage.getMap().containsKey(user.getId())) {
-            log.warn("User не существует");
-            throw new UnknownException("Такого Userа нет");
-        }
+        HashMap<Integer, User> ll = getUsersCh();
         if (user.getName() == null) {
             user.setName(user.getLogin());
+        }
+        if (!ll.containsKey(user.getId())) {
+            log.warn("Некорректный User");
+            throw new UnknownException("Некорректный User");
         }
         if (!isValid(user)) {
             log.warn("Некорректный User");
@@ -84,35 +82,36 @@ public class InMemoryUserService implements UserService {
     @Override
     public void addFriend(int idUser1, int idUser2) {
         log.warn("добавление друзей");
-        if (!userStorage.getMap().containsKey(idUser1)) {
-            log.warn("Друг не найден");
-            throw new UnknownException("Друг не найден");
-        } else if (!userStorage.getMap().containsKey(idUser2)) {
+        HashMap<Integer, User> ll = getUsersCh();
+        if (!ll.containsKey(idUser1)) {
+            log.warn("Пользователь не найден");
+            throw new UnknownException("Пользователь не найден");
+        } else if (!ll.containsKey(idUser2)) {
             log.warn("Друг не найден");
             throw new UnknownException("Друг не найден");
         } else {
-            userStorage.getMap().get(idUser1).addFriend(idUser2);
-            userStorage.getMap().get(idUser2).addFriend(idUser1);
+            userStorage.addFriend(idUser1, idUser2);
         }
     }
 
     @Override
     public List<User> getLsFriends(int idUser1, int idUser2) {
         log.debug("добавление друзей");
-        if (!userStorage.getMap().containsKey(idUser1)) {
+        HashMap<Integer, User> ll = getUsersCh();
+        if (!ll.containsKey(idUser1)) {
             log.warn("Первый друг не найден");
-            throw new UnknownException("Друг не найден");
-        } else if (!userStorage.getMap().containsKey(idUser2)) {
+            throw new UnknownException("User не найден");
+        } else if (!ll.containsKey(idUser2)) {
             log.warn("Второй друг не найден");
             throw new UnknownException("Друг не найден");
         } else {
-            User user1 = userStorage.getMap().get(idUser1);
-            User user2 = userStorage.getMap().get(idUser2);
+            User user1 = ll.get(idUser1);
+            User user2 = ll.get(idUser2);
             List<User> comFriends = new ArrayList<>();
-            for (Integer o : user1.getLsFriends()) {
-                for (Integer b : user2.getLsFriends()) {
+            for (User o : user1.getLsFriends()) {
+                for (User b : user2.getLsFriends()) {
                     if (Objects.equals(o, b)) {
-                        comFriends.add(userStorage.getMap().get(o));
+                        comFriends.add(ll.get(o.getId()));
                     }
                 }
             }
@@ -123,22 +122,26 @@ public class InMemoryUserService implements UserService {
     @Override
     public void deleteFriend(int idUser1, int idUser2) {
         log.debug("удаление друзей");
-        if (!userStorage.getMap().containsKey(idUser1)) {
+        HashMap<Integer, User> ll = getUsersCh();
+        if (!ll.containsKey(idUser1)) {
             log.warn("Друг не найден");
             throw new UnknownException("Пользователь не найден");
-        } else if (!userStorage.getMap().containsKey(idUser2)) {
+        } else if (!ll.containsKey(idUser2)) {
             log.warn("Друг не найден");
             throw new UnknownException("Друг не найден");
-        } else if (!userStorage.getMap().get(idUser1).getLsFriends().contains(userStorage.getMap().get(idUser2).getId())) {
-            log.warn("Они не друзья");
-            throw new ValidateException("Они не друзья");
         } else {
-            User user1 = userStorage.getMap().get(idUser1);
-            User user2 = userStorage.getMap().get(idUser2);
-            user1.deleteFriend(user2);
-            user2.deleteFriend(user1);
+            userStorage.delFriend(idUser1, idUser2);
         }
 
+    }
+
+    private HashMap<Integer, User> getUsersCh() {
+        List<User> lss = getLsUsers();
+        HashMap<Integer, User> ans = new HashMap<>();
+        for (User o : lss) {
+            ans.put(o.getId(), o);
+        }
+        return ans;
     }
 
     private boolean isValid(User user) {

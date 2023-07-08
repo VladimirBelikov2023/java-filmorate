@@ -20,7 +20,9 @@ public class UserController {
 
     @GetMapping("/users")
     public List<User> getLsUsers() {
-        return new ArrayList<>(userService.getLsUsers());
+        List<User> ls = new ArrayList<>(userService.getLsUsers());
+        System.out.println(ls);
+        return ls;
     }
 
     @GetMapping("/users/{id}")
