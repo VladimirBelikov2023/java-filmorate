@@ -5,10 +5,7 @@ import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.InMemoryFilmService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.LocalDate;
 
@@ -17,8 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class FilmControllerTest {
 
     private final FilmStorage filmStorage = new InMemoryFilmStorage();
-    private final UserStorage userStorage = new InMemoryUserStorage();
-    private final FilmService filmService = new InMemoryFilmService(filmStorage,userStorage);
+    private final FilmService filmService = new InMemoryFilmService(filmStorage);
     private final FilmController controller = new FilmController(filmService);
 
     @Test
@@ -40,7 +36,7 @@ class FilmControllerTest {
             assertNotNull(controller.postFilm(new Film(3, null,
                     "Мой любимый фильм", LocalDate.of(2000, 3, 1), 10)));
         } catch (ValidateException ex) {
-            assertEquals("Некорректный фильм", ex.getMessage());
+            assertEquals("Wrong film", ex.getMessage());
             return;
         }
         fail();
@@ -52,7 +48,7 @@ class FilmControllerTest {
             assertNotNull(controller.postFilm(new Film(3, "Волк с Уолл-Стрит",
                     "Мой любимый фильм".repeat(200), LocalDate.of(2000, 3, 1), 10)));
         } catch (ValidateException ex) {
-            assertEquals("Некорректный фильм", ex.getMessage());
+            assertEquals("Wrong film", ex.getMessage());
             return;
         }
         fail();
@@ -64,7 +60,7 @@ class FilmControllerTest {
             assertNotNull(controller.postFilm(new Film(3, "Волк с Уолл-Стрит",
                     "Мой любимый фильм", LocalDate.of(2000, 3, 1), -10)));
         } catch (ValidateException ex) {
-            assertEquals("Некорректный фильм", ex.getMessage());
+            assertEquals("Wrong film", ex.getMessage());
             return;
         }
         fail();
@@ -76,7 +72,7 @@ class FilmControllerTest {
             assertNotNull(controller.postFilm(new Film(3, "Волк с Уолл-Стрит",
                     "Мой любимый фильм", LocalDate.of(1000, 3, 1), 10)));
         } catch (ValidateException ex) {
-            assertEquals("Некорректный фильм", ex.getMessage());
+            assertEquals("Wrong film", ex.getMessage());
             return;
         }
         fail();
@@ -93,8 +89,6 @@ class FilmControllerTest {
     }
 
 
-
-
     @Test
     void updateFilmFilmNullName() {
         Film film = new Film(1, "Волк с Уолл-Стрит2", "Мой нелюбимый фильм",
@@ -104,7 +98,7 @@ class FilmControllerTest {
             controller.update(new Film(1, null,
                     "Мой любимый фильм", LocalDate.of(2000, 3, 1), 10));
         } catch (ValidateException ex) {
-            assertEquals("Некорректный фильм", ex.getMessage());
+            assertEquals("Wrong film", ex.getMessage());
             return;
         }
         fail();
